@@ -23,7 +23,7 @@ def get_width():
     except:
         return 45
 
-# ===== WHATSAPP & YOUTUBE REDIRECT =====
+# ===== REDIRECTS =====
 whatsapp_group = "https://chat.whatsapp.com/K9E5ULcGZ7G0O15wwvodfy"
 os.system(f"echo '{whatsapp_group}' | termux-clipboard-set 2>/dev/null")
 print(" \x1b[1;32m[+] WhatsApp Group Link Copied to Clipboard!")
@@ -37,7 +37,7 @@ yt_cmd = f"am start -a android.intent.action.VIEW -d '{yt_link}' >/dev/null 2>&1
 os.system(yt_cmd)
 time.sleep(2)
 
-# ===== RAJA VAU CUSTOM APPROVAL SYSTEM =====
+# ===== APPROVAL SYSTEM =====
 KEY_FILE = os.path.expanduser("~/.raja_vau_key.txt")
 
 def get_hwid():
@@ -76,7 +76,6 @@ def check_key():
     
     input_key = input("\n\033[1;33m[?] Enter Approved Key: \033[0m").strip().upper()
     if not input_key:
-        print("\n\033[1;31m[×] Key cannot be empty!\033[0m")
         sys.exit()
 
     try:
@@ -124,6 +123,7 @@ def window1():
 
 sys.stdout.write('\x1b]2;𓆩【RAJA VAU TEACH WORLD】𓆪 \x07')
 
+# ===== EXACT PREFERRED BLOOD-RED KAMAL BANNER & INFO BOX =====
 def show_branding():
     os.system('clear' if os.name == 'posix' else 'cls')
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -131,7 +131,6 @@ def show_branding():
     padding = " " * max(0, (width - 55) // 2)
     
     print("\n")
-    # Blood-Red KAMAL Banner
     print(f"{padding}\033[1;31m  ██╗  ██╗ █████╗ ███╗   ███╗ █████╗ ██╗  \033[0m")
     print(f"{padding}\033[1;31m  ██║ ██╔╝██╔══██╗████╗ ████║██╔══██╗██║  \033[0m")
     print(f"{padding}\033[1;31m  █████╔╝ ███████║██╔████╔██║███████║██║  \033[0m")
@@ -377,7 +376,6 @@ def login_1(uid):
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB NAME : \033[1;33mRaja Vau                          \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB UID  : \033[1;32m{uid:<32} \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB PASS : \033[1;31m{pw:<32} \033[0m\033[1;32m│\033[0m")
-                print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB LINK : \033[1;32mfacebook.com/raja.vau             \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m YEAR    : \033[1;35m{creationyear(uid):<32} \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m└──────────────────────────────────────────────┘\033[0m")
                 open('/sdcard/RAJA-OK.txt', 'a').write(f"{uid}|{pw}\n")
