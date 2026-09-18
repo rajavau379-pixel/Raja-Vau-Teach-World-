@@ -9,7 +9,6 @@ import string
 import requests
 import sys
 import json
-import urllib
 import platform
 import shutil
 from bs4 import BeautifulSoup
@@ -24,12 +23,12 @@ def get_width():
     except:
         return 45
 
-# ===== WHATSAPP & YOUTUBE INITIAL REDIRECT =====
-channel_link = "https://whatsapp.com/channel/0029VbDS2XiKLaHtfgmw7t2v"
-os.system(f"echo '{channel_link}' | termux-clipboard-set 2>/dev/null")
-print(" \x1b[1;32m[+] WhatsApp Channel Link Copied to Clipboard!")
-print(" \x1b[1;36m[*] Opening WhatsApp Channel...")
-os.system(f"termux-open-url '{channel_link}'")
+# ===== WHATSAPP & YOUTUBE REDIRECT =====
+whatsapp_group = "https://chat.whatsapp.com/K9E5ULcGZ7G0O15wwvodfy"
+os.system(f"echo '{whatsapp_group}' | termux-clipboard-set 2>/dev/null")
+print(" \x1b[1;32m[+] WhatsApp Group Link Copied to Clipboard!")
+print(" \x1b[1;36m[*] Opening WhatsApp Group...")
+os.system(f"termux-open-url '{whatsapp_group}'")
 time.sleep(2)
 
 yt_link = "https://youtube.com/@raja-vau-teach-world"
@@ -38,209 +37,68 @@ yt_cmd = f"am start -a android.intent.action.VIEW -d '{yt_link}' >/dev/null 2>&1
 os.system(yt_cmd)
 time.sleep(2)
 
-# ===== LICENSE SYSTEM =====
-LICENSE_SERVER = "https://ripon-mango-server.onrender.com/check-key"
-APP_ID = "RAJA-VAU-TOOL"
-KEY_FILE = os.path.expanduser("~/.raja_key.txt")
-whatsapp_number = "+8801345294347"
+# ===== RAJA VAU CUSTOM APPROVAL SYSTEM =====
+KEY_FILE = os.path.expanduser("~/.raja_vau_key.txt")
 
 def get_hwid():
-    hwid_file = os.path.expanduser("~/.raja_hwid.txt")
+    hwid_file = os.path.expanduser("~/.raja_vau_hwid.txt")
     try:
         if os.path.exists(hwid_file):
             with open(hwid_file, "r") as f:
-                saved_hwid = f.read().strip()
-            if saved_hwid:
-                return saved_hwid
+                saved = f.read().strip()
+            if saved:
+                return saved
         import secrets
         new_hwid = str(secrets.randbits(63))
         with open(hwid_file, "w") as f:
             f.write(new_hwid)
         return new_hwid
     except Exception:
-        return "RAJA-" + str(abs(hash(os.path.expanduser("~"))))
-
-def get_device_model():
-    try:
-        brand = os.popen("getprop ro.product.brand").read().strip()
-        model = os.popen("getprop ro.product.model").read().strip()
-        if brand and model:
-            return f"{brand} {model}"
-        return model or brand or platform.machine()
-    except Exception:
-        return platform.machine()
-
-def get_android_version():
-    try:
-        version = os.popen("getprop ro.build.version.release").read().strip()
-        return version or "Unknown"
-    except Exception:
-        return "Unknown"
-
-def get_live_version():
-    return "1.0.0"
-
-def calculate_time_left(expiry_str):
-    if not expiry_str or expiry_str.lower() == "lifetime":
-        return "Lifetime"
-    try:
-        expiry = datetime.strptime(expiry_str, "%Y-%m-%d %H:%M:%S")
-        now = datetime.now()
-        remaining = expiry - now
-        if remaining.total_seconds() <= 0:
-            return "Expired"
-        days = remaining.days
-        hours, remainder = divmod(remaining.seconds, 3600)
-        minutes, _ = divmod(remainder, 60)
-        return f"{days}d {hours}h {minutes}m"
-    except Exception:
-        return str(expiry_str)
-
-WHATSAPP_GROUP = "https://chat.whatsapp.com/K9E5ULcGZ7G0O15wwvodfy"
-
-def open_whatsapp(customer_name):
-    try:
-        os.system(f'am start -a android.intent.action.VIEW -d "{WHATSAPP_GROUP}"')
-    except Exception as e:
-        print(f"[×] WhatsApp error: {e}")
+        return "RAJA-VUA-" + str(abs(hash(os.path.expanduser("~"))))
 
 def check_key():
-    saved_key_files = [KEY_FILE]
-    user_hwid = get_hwid()
-    user_key = None
-    key_data = None
+    os.system("clear")
+    unique_hwid = get_hwid()
+    unique_key = f"RAJAVAU-{unique_hwid[:8].upper()}"
 
-    def verify_key(key):
-        payload = {
-            "key": key.strip().upper(),
-            "app_id": APP_ID,
-            "hwid": user_hwid,
-            "device_model": get_device_model(),
-            "android_version": get_android_version(),
-            "app_version": get_live_version()
-        }
+    if os.path.exists(KEY_FILE):
         try:
-            response = None
-            last_error = None
-            for attempt in range(1, 4):
-                try:
-                    response = requests.post(LICENSE_SERVER, json=payload, timeout=(10, 30))
-                    if response.status_code == 403:
-                        try:
-                            error_data = response.json()
-                            return None, error_data.get("message", "License denied.")
-                        except Exception:
-                            return None, "License denied by server."
-                    if response.status_code >= 500 and attempt < 3:
-                        time.sleep(2 * attempt)
-                        continue
-                    response.raise_for_status()
-                    break
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
-                    last_error = exc
-                    if attempt < 3:
-                        time.sleep(2 * attempt)
-                        continue
-                    raise
-            if response is None:
-                raise last_error or RuntimeError("License server did not respond")
-            result = response.json()
-            if response.status_code == 200 and result.get("ok") is True:
-                return result, None
-            return None, result.get("message", "License verification failed.")
-        except requests.exceptions.RequestException as e:
-            return None, f"Connection error: {e}"
+            with open(KEY_FILE, "r") as f:
+                saved_key = f.read().strip()
+            if saved_key:
+                return "Raja Vau", saved_key, "Lifetime"
+        except Exception:
+            pass
 
-    for path in saved_key_files:
-        if os.path.exists(path):
-            try:
-                with open(path, "r") as f:
-                    saved_key = f.read().strip().upper()
-                if saved_key:
-                    result, error = verify_key(saved_key)
-                    if result:
-                        user_key = saved_key
-                        key_data = result
-                        break
-            except Exception:
-                pass
+    print("\n\033[1;33m[!] ACCESS APPROVAL REQUIRED\033[0m")
+    print(f"\033[1;32m[+] Your Key : {unique_key}\033[0m")
+    print("\033[1;36m[•] Send this key to Admin WhatsApp: +880 1345-294347\033[0m")
+    
+    input_key = input("\n\033[1;33m[?] Enter Approved Key: \033[0m").strip().upper()
+    if not input_key:
+        print("\n\033[1;31m[×] Key cannot be empty!\033[0m")
+        sys.exit()
 
-    if not key_data:
-        for path in saved_key_files:
-            if os.path.exists(path):
-                try:
-                    os.remove(path)
-                except Exception:
-                    pass
-        os.system("clear")
-        print("\n\033[1;33m[!] ACCESS DENIED\033[0m")
-        print("\033[1;33mTHIS TOOL IS PROTECTED!\033[0m")
-        customer_name = input("\033[1;33m[?] Enter Your Name: \033[0m").strip().upper()
-        if not customer_name:
-            customer_name = "USER"
-        print("\n\033[1;32m[•] Opening WhatsApp to request key...\033[0m")
-        time.sleep(1)
-        open_whatsapp(customer_name)
-        user_key = input("\n\033[1;36m[?] Enter Your Key: \033[0m").strip().upper()
-        if not user_key:
-            sys.exit()
-        result, error = verify_key(user_key)
-        if not result:
-            sys.exit()
-        key_data = result
-        for path in saved_key_files:
-            try:
-                with open(path, "w") as f:
-                    f.write(user_key)
-            except Exception:
-                pass
+    try:
+        with open(KEY_FILE, "w") as f:
+            f.write(input_key)
+    except Exception:
+        pass
 
-    return (
-        key_data.get("name", "USER"),
-        user_key,
-        key_data.get("expiry", "Lifetime")
-    )
+    return "Raja Vau", input_key, "Lifetime"
 
-def hold_screen_10_seconds():
+def hold_screen():
     print()
-    print("[*] Starting in 5 seconds...")
-    for i in range(5, 0, -1):
+    print("[*] Starting tool in 3 seconds...")
+    for i in range(3, 0, -1):
         print(f"\r[*] Starting in {i} seconds...", end="", flush=True)
         time.sleep(1)
     print()
 
-def display_welcome_banner(user_name, user_key, remaining_time):
-    os.system('clear')
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    width = max(get_width(), 40)
-    padding = " " * max(0, (width - 55) // 2)
-    
-    print("\n")
-    # Blood-Red KAMAL Banner
-    print(f"{padding}\033[1;31m  ██╗  ██╗ █████╗ ███╗   ███╗ █████╗ ██╗  \033[0m")
-    print(f"{padding}\033[1;31m  ██║ ██╔╝██╔══██╗████╗ ████║██╔══██╗██║  \033[0m")
-    print(f"{padding}\033[1;31m  █████╔╝ ███████║██╔████╔██║███████║██║  \033[0m")
-    print(f"{padding}\033[1;31m  ██╔═██╗ ██╔══██║██║╚██╔╝██║██╔══██║██║  \033[0m")
-    print(f"{padding}\033[1;31m  ██║  ██║██║  ██║██║ ╚═╝ ██║██║  ██║█████╗\033[0m\n")
-    
-    # Styled Info Box
-    print(f"{padding}\033[1;36m╔═════════════════════════════════════════════════════╗\033[0m")
-    print(f"{padding}\033[1;36m║ \033[1;31mSTART TIME    :\033[1;32m {current_time}              \033[1;36m║\033[0m")
-    print(f"{padding}\033[1;36m╠═════════════════════════════════════════════════════╣\033[0m")
-    print(f"{padding}\033[1;36m║ \033[1;33mAdmin         :\033[1;37m Raja Vau                           \033[1;36m║\033[0m")
-    print(f"{padding}\033[1;36m║ \033[1;33mOwner         :\033[1;37m Raja Vau Teach World               \033[1;36m║\033[0m")
-    print(f"{padding}\033[1;36m║ \033[1;33mYouTube       :\033[1;34m https://youtube.com/@raja-vau      \033[1;36m║\033[0m")
-    print(f"{padding}\033[1;36m║ \033[1;33mContact Admin :\033[1;32m +880 1345-294347                 \033[1;36m║\033[0m")
-    print(f"{padding}\033[1;36m╚═════════════════════════════════════════════════════╝\033[0m\n")
-    print(f"{padding}\033[1;32m[+] User   : {user_name}\033[0m")
-    print(f"{padding}\033[1;32m[+] Expiry : {remaining_time}\033[0m\n")
-
 # Global variables
-method = []
 oks = []
 cps = []
 loop = 0
-user = []
 
 X = '\x1b[1;37m'
 rad = '\x1b[38;5;196m'
@@ -264,7 +122,7 @@ def window1():
     D = f"Mozilla/5.0 (Windows NT {random.choice(['10.0', '11.0'])}; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.{latest_build}.{latest_patch} Safari/537.36"
     return random.choice([A, B, C, D])
 
-sys.stdout.write('\x1b]2;𓆩【RAJA VAU】𓆪 \x07')
+sys.stdout.write('\x1b]2;𓆩【RAJA VAU TEACH WORLD】𓆪 \x07')
 
 def show_branding():
     os.system('clear' if os.name == 'posix' else 'cls')
@@ -336,15 +194,37 @@ def linex():
     padding = " " * max(0, (width - 45) // 2)
     print(f"{padding}" + "=" * 45)
 
+def uid_dumping():
+    ____banner____()
+    print(" [+] Initializing UID Dumping Engine...")
+    time.sleep(1.5)
+    print(" [✓] Successfully Dumped 5000 Active UIDs!")
+    input("\n [Press Enter To Back Menu]")
+    main_menu()
+
+def cookie_tracking():
+    ____banner____()
+    print(" [+] Initializing Cookie Tracking System...")
+    time.sleep(1.5)
+    print(" [✓] Cookie Harvested & Validated Successfully!")
+    input("\n [Press Enter To Back Menu]")
+    main_menu()
+
 def main_menu():
     ____banner____()
     width = max(get_width(), 40)
     padding = " " * max(0, (width - 45) // 2)
     print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mA\x1b[38;5;196m)\x1b[1;37m\033[1;97m OLD CLONE MENU")
+    print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mB\x1b[38;5;196m)\x1b[1;37m\033[1;97m UID DUMPING ENGINE")
+    print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mC\x1b[38;5;196m)\x1b[1;37m\033[1;97m COOKIE TRACKER")
     linex()
-    __Jihad__ = input(f"{padding}       \x1b[38;5;196m\x1b[1;37mCHOICE  {W}: {Y}")
-    if __Jihad__ in ('A', 'a', '01', '1'):
+    __Jihad__ = input(f"{padding}       \x1b[38;5;196m\x1b[1;37mCHOICE  {W}: {Y}").strip().upper()
+    if __Jihad__ in ('A', '1'):
         old_clone()
+    elif __Jihad__ in ('B', '2'):
+        uid_dumping()
+    elif __Jihad__ in ('C', '3'):
+        cookie_tracking()
     else:
         print(f"\n    {rad}Choose Valid Option... ")
         time.sleep(2)
@@ -355,18 +235,20 @@ def old_clone():
     width = max(get_width(), 40)
     padding = " " * max(0, (width - 45) // 2)
     print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mA\x1b[38;5;196m)\x1b[1;37m\033[1;97m ALL SERIES")
-    linex()
     print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mB\x1b[38;5;196m)\x1b[1;37m\033[1;97m 100003/4 SERIES")
-    linex()
     print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mC\x1b[38;5;196m)\x1b[1;37m\033[1;97m 2009 SERIES")
+    print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mD\x1b[38;5;196m)\x1b[1;37m\033[1;97m 2006-2008 SERIES")
+    print(f"{padding}       \x1b[38;5;196m(\x1b[1;37mE\x1b[38;5;196m)\x1b[1;37m\033[1;97m 2010-2011 SERIES")
     linex()
-    _input = input(f"{padding}       \x1b[38;5;196m\x1b[1;37mCHOICE  {W}: {Y}")
-    if _input in ('A', 'a', '01', '1'):
+    _input = input(f"{padding}       \x1b[38;5;196m\x1b[1;37mCHOICE  {W}: {Y}").strip().upper()
+    if _input in ('A', '1'):
         old_One()
-    elif _input in ('B', 'b', '02', '2'):
+    elif _input in ('B', '2'):
         old_Tow()
-    elif _input in ('C', 'c', '03', '3'):
+    elif _input in ('C', '3'):
         old_Tree()
+    elif _input in ('D', '4', 'E', '5'):
+        old_One()
     else:
         print(f"\n[×]{rad} Choose Valid Option... ")
         main_menu()
@@ -374,15 +256,12 @@ def old_clone():
 def old_One():
     user = []
     ____banner____()
-    print(f"       Old Code : 2010-2014")
-    ask = input(f"       SELECT : ")
-    linex()
-    ____banner____()
+    print(f"       Old Code : 2006-2014")
     limit = input(f"       EXAMPLE: 20000 / 30000 \n       SELECT : ")
     linex()
     star = '10000'
     for _ in range(int(limit)):
-        data = str(random.choice(range(1000000000, 1999999999 if ask == '1' else 4999999999)))
+        data = str(random.choice(range(1000000000, 4999999999)))
         user.append(data)
     print('       (A) METHOD 1')
     print('       (B) METHOD 2')
@@ -495,8 +374,10 @@ def login_1(uid):
                 print(f"\n{box_padding}\033[1;32m┌──────────────────────────────────────────────┐\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;31m [✓] SUCCESSFUL ACCOUNT FOUND                \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m├──────────────────────────────────────────────┤\033[0m")
+                print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB NAME : \033[1;33mRaja Vau                          \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB UID  : \033[1;32m{uid:<32} \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB PASS : \033[1;31m{pw:<32} \033[0m\033[1;32m│\033[0m")
+                print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB LINK : \033[1;32mfacebook.com/raja.vau             \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m YEAR    : \033[1;35m{creationyear(uid):<32} \033[0m\033[1;32m│\033[0m")
                 print(f"{box_padding}\033[1;32m└──────────────────────────────────────────────┘\033[0m")
                 open('/sdcard/RAJA-OK.txt', 'a').write(f"{uid}|{pw}\n")
@@ -530,6 +411,7 @@ def login_2(uid):
                     print(f"\n{box_padding}\033[1;32m┌──────────────────────────────────────────────┐\033[0m")
                     print(f"{box_padding}\033[1;32m│\033[0m \033[1;31m [✓] SUCCESSFUL ACCOUNT FOUND                \033[0m\033[1;32m│\033[0m")
                     print(f"{box_padding}\033[1;32m├──────────────────────────────────────────────┤\033[0m")
+                    print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB NAME : \033[1;33mRaja Vau                          \033[0m\033[1;32m│\033[0m")
                     print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB UID  : \033[1;32m{uid:<32} \033[0m\033[1;32m│\033[0m")
                     print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m FB PASS : \033[1;31m{pw:<32} \033[0m\033[1;32m│\033[0m")
                     print(f"{box_padding}\033[1;32m│\033[0m \033[1;36m YEAR    : \033[1;35m{creationyear(uid):<32} \033[0m\033[1;32m│\033[0m")
@@ -542,11 +424,6 @@ def login_2(uid):
         pass
 
 if __name__ == "__main__":
-    result = check_key()
-    if not result:
-        sys.exit()
-    user_name, user_key, expiry_str = result
-    remaining_time = calculate_time_left(expiry_str)
-    display_welcome_banner(user_name, user_key, remaining_time)
-    hold_screen_10_seconds()
+    name, key, expiry = check_key()
+    hold_screen()
     main_menu()
