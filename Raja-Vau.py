@@ -23,21 +23,8 @@ def get_width():
     except:
         return 45
 
-# ===== REDIRECTS =====
-whatsapp_group = "https://chat.whatsapp.com/K9E5ULcGZ7G0O15wwvodfy"
-os.system(f"echo '{whatsapp_group}' | termux-clipboard-set 2>/dev/null")
-print(" \x1b[1;32m[+] WhatsApp Group Link Copied to Clipboard!")
-print(" \x1b[1;36m[*] Opening WhatsApp Group...")
-os.system(f"termux-open-url '{whatsapp_group}'")
-time.sleep(2)
-
-yt_link = "https://youtube.com/@raja-vau-teach-world"
-print(" \x1b[1;32m[+] Opening YouTube Channel... Please Subscribe!")
-yt_cmd = f"am start -a android.intent.action.VIEW -d '{yt_link}' >/dev/null 2>&1 || termux-open-url '{yt_link}'"
-os.system(yt_cmd)
-time.sleep(2)
-
-# ===== APPROVAL SYSTEM =====
+# ===== GITHUB RAW KEY APPROVAL SYSTEM =====
+KEY_URL = "https://raw.githubusercontent.com/rajavau379-pixel/Raja-Vau-Teach-World-/refs/heads/main/key.txt"
 KEY_FILE = os.path.expanduser("~/.raja_vau_key.txt")
 
 def get_hwid():
@@ -49,42 +36,63 @@ def get_hwid():
             if saved:
                 return saved
         import secrets
-        new_hwid = str(secrets.randbits(63))
+        new_hwid = str(secrets.randbits(20))
         with open(hwid_file, "w") as f:
             f.write(new_hwid)
         return new_hwid
     except Exception:
-        return "RAJA-VUA-" + str(abs(hash(os.path.expanduser("~"))))
+        return "12345"
 
 def check_key():
-    os.system("clear")
-    unique_hwid = get_hwid()
-    unique_key = f"RAJAVAU-{unique_hwid[:8].upper()}"
+    hwid = get_hwid()
+    device_key = f"RajaVau-Teachworld-{hwid}"
 
+    # Check if saved key exists and is valid in GitHub raw
     if os.path.exists(KEY_FILE):
         try:
             with open(KEY_FILE, "r") as f:
                 saved_key = f.read().strip()
-            if saved_key:
-                return "Raja Vau", saved_key, "Lifetime"
+            res = requests.get(KEY_URL, timeout=10)
+            if saved_key in res.text:
+                return
         except Exception:
             pass
 
-    print("\n\033[1;33m[!] ACCESS APPROVAL REQUIRED\033[0m")
-    print(f"\033[1;32m[+] Your Key : {unique_key}\033[0m")
-    print("\033[1;36m[•] Send this key to Admin WhatsApp: +880 1345-294347\033[0m")
-    
-    input_key = input("\n\033[1;33m[?] Enter Approved Key: \033[0m").strip().upper()
-    if not input_key:
-        sys.exit()
-
-    try:
-        with open(KEY_FILE, "w") as f:
-            f.write(input_key)
-    except Exception:
-        pass
-
-    return "Raja Vau", input_key, "Lifetime"
+    while True:
+        os.system('clear' if os.name == 'posix' else 'cls')
+        print("\n")
+        print("    ╔═════════════════════════════════════════════════════╗")
+        print(f"    ║ Your Key     : \033[1;33m{device_key}\033[0m                  ║")
+        print("    ╠═════════════════════════════════════════════════════╣")
+        print("    ║ Send this key to WhatsApp for approval!             ║")
+        print("    ║ WhatsApp No  : +880 1345-294347                     ║")
+        print("    ╚═════════════════════════════════════════════════════╝")
+        print(" [1] Check Approval Status")
+        print(" [0] Exit")
+        print("───────────────────────────────────────────────────────")
+        
+        choice = input(" [-] CHOOSE ---> ").strip()
+        if choice == '1':
+            print("\n [+] Checking approval from GitHub Server...")
+            try:
+                res = requests.get(KEY_URL, timeout=10)
+                if device_key in res.text:
+                    with open(KEY_FILE, "w") as f:
+                        f.write(device_key)
+                    print("\n \033[1;32m[✓] Key Approved Successfully! Starting Tool...\033[0m")
+                    time.sleep(2)
+                    break
+                else:
+                    print("\n \033[1;31m[×] Key not approved yet! Please contact admin.\033[0m")
+                    time.sleep(2.5)
+            except Exception as e:
+                print(f"\n \033[1;31m[×] Connection Error: {e}\033[0m")
+                time.sleep(2.5)
+        elif choice == '0':
+            sys.exit()
+        else:
+            print("\n [!] Invalid Choice!")
+            time.sleep(1)
 
 def hold_screen():
     print()
@@ -422,6 +430,6 @@ def login_2(uid):
         pass
 
 if __name__ == "__main__":
-    name, key, expiry = check_key()
+    check_key()
     hold_screen()
     main_menu()
